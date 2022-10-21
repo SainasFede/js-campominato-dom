@@ -37,12 +37,48 @@ function start(){
   const boxNumber = levelGame[level.value];
   console.log(boxNumber);
 
+//  console.log(-----> qui 1);
 
   // avrò per forza bisogno di una funzione di reset ?? ancora da definire ??
   reset()
+
+
+  // creo la griglia in base alle opzione selezionata dato dalla const boxNumber
+  createGriglia(boxNumber)
 }
 
 
 function reset(){
-  
+  main.innerHTML = '';
 }
+
+
+function createGriglia(boxNumber){
+  const griglia = document.createElement('div');
+  griglia.className = 'game-griglia';
+//  console.log(--------> qui 2);
+
+  // per forza per creare la griglia devo prima creare i box interni, creo la funzione e continuo
+  for(let i = 1; i <= boxNumber; i++){
+    const box = createBox(i, boxNumber)
+    griglia.append(box);
+
+  }
+  main.append(griglia);
+}
+// console.log(-------> qui 3);
+
+
+// dovrò dare anche un id al box
+function createBox(idBox, boxNumber){
+  const box = document.createElement('div');
+  box.className = 'box';
+
+  // con una classe box da CSS, scritta così avrò come risultato la classe completa stilata in CSS "box+NumLivello"
+  box.classList.add('dim-'+boxNumber);
+  box.idBox = idBox;
+  box.innerHTML = `<span>${idBox}</span>`;
+  return box;
+}
+
+//  console.log(------> qui 4);
