@@ -29,6 +29,9 @@ const level = document.querySelector('#level-option');
 
 // in base al value dato alle option leggo tramite indice array il loro valore.
 const levelGame = [100, 81, 49];
+const bombs_Number = 16;
+let score = 0;
+let bombs = [];
 
 startBtn.addEventListener('click', start);
 
@@ -44,12 +47,35 @@ function start(){
 
 
   // creo la griglia in base alle opzione selezionata dato dalla const boxNumber
-  createGriglia(boxNumber)
+  createGriglia(boxNumber);
+  bombs = createBombs(boxNumber);
+  console.log(bombs);
+}
+
+// dichiaro l'endgame subito sotto lo start così da visualizzare subito come termina il gioco
+function endGame(isWin){
+
+  let outcome;
+  const boxes = document.getElementsByClassName('box');
+
+  if(isWin){
+    outcome = `Hai vinto! Hai evitato tutte le bombe!!`
+  }else{
+    console.log('FINE');
+    outcome = `Hai perso. Hai totalizzato ${score} punti..ma non hai evitato tutte le bombe!`
+  }
+  document.querySelector('.esito-game').innerHTML = outcome;
+  showBombs();
+  const endLevel = document.createElement('div');
+  endLevel.className = 'shield';
+  document.querySelector('.game-griglia').append(endLevel);
 }
 
 
 function reset(){
   main.innerHTML = '';
+  score = 0;
+  document.querySelector('.esito-game').innerHTML = '';
 }
 
 
@@ -73,12 +99,69 @@ function createGriglia(boxNumber){
 function createBox(idBox, boxNumber){
   const box = document.createElement('div');
   box.className = 'box';
+  // abilito un solo click per casella perché di base cliccando tot volte sulla stessa casella il game finiva con una Win. Soluzione by Carmelo P.
+  box.addEventListener('click', handleClickBox, {once:true})
 
   // con una classe box da CSS, scritta così avrò come risultato la classe completa stilata in CSS "box+NumLivello"
   box.classList.add('dim-'+boxNumber);
   box.idBox = idBox;
   box.innerHTML = `<span>${idBox}</span>`;
+  box.addEventListener('click', handleClickBox);
   return box;
 }
+//  console.log(------> qui 4)
 
-//  console.log(------> qui 4);
+
+function handleClickBox(){
+
+
+
+  console.log(this.idBox);
+  if(!bombs.includes(this.idBox)){
+    // al click sul box non bomba, do la classe cliccato così da visualizzare graficamente le celle giuste
+    this.classList.add('click_ate')
+    score++
+    console.log(score);
+
+    const boxes = document.getElementsByClassName('box');
+    if(score === boxes.length - bombs_Number){
+
+      endGame(true)
+
+    }
+    }else{
+
+      endGame(false)
+
+  }
+}
+
+function showBombs(){
+  const boxes = document.getElementsByClassName('box');
+
+  for(let i = 0; i < boxes.length; i++){
+    const box = boxes[i];
+    if(bombs.includes(box.idBox)){
+      box.classList.add('bomb');
+    }
+
+  }
+}
+
+
+function createBombs(boxNumber){
+  const bombsCreated = [];
+  while(bombsCreated.length < bombs_Number){
+    const bomb = randomNumber(1, boxNumber);
+    if(!bombsCreated.includes(bomb)){
+      bombsCreated.push(bomb);
+    }
+  }
+
+  return bombsCreated;
+}
+
+
+function randomNumber(min, max){
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
